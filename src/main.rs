@@ -15,22 +15,17 @@ pub extern "C" fn _start() -> !{
     println!("Hello World!");
     println!("It didn't crash!!");
 
-    // #[cfg(test)]
-    // test_main();
+    #[cfg(test)]
+    test_main();
 
-    loop {
-        for _ in 0..10000 {};
-
-        use echo::print;
-        print!("-");
-    }
+    echo::hlt_loop();
 }
 
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> !{
     println!("{}", info);
-    loop {}
+    echo::hlt_loop();
 }
 
 #[cfg(test)]
