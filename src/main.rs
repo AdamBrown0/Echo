@@ -15,6 +15,14 @@ pub extern "C" fn _start() -> !{
     print!("BBBB");
     println!("The number is {} and answer is {}", 42, 1.0/3.0);
 
+    echo::init();
+
+    fn stack_overflow() {
+        stack_overflow();
+    }
+
+    // stack_overflow();
+
     #[cfg(test)]
     test_main();
 
