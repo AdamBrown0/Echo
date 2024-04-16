@@ -12,19 +12,11 @@ use core::panic::PanicInfo;
 pub extern "C" fn _start() -> !{
     echo::init();
 
-    println!("Hello World{}", "!");
-    print!("AAAA");
-    print!("BBBB");
-    println!("The number is {} and answer is {}", 42, 1.0/3.0);
+    println!("Hello World!");
+    println!("It didn't crash!!");
 
-    fn stack_overflow() {
-        stack_overflow();
-    }
-
-    // stack_overflow();
-
-    #[cfg(test)]
-    test_main();
+    // #[cfg(test)]
+    // test_main();
 
     loop {}
 }
