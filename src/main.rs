@@ -11,7 +11,11 @@ pub extern "C" fn _start() -> !{
     println!("Hello World{}", "!");
 
     echo::init();
-    x86_64::instructions::interrupts::int3();
+
+    fn stack_overflow() {
+        stack_overflow();
+    }
+    stack_overflow();
 
     println!("It didn't crash!");
 
