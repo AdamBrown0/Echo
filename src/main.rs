@@ -10,7 +10,7 @@ pub extern "C" fn _start() -> !{
     println!("Hello World{}", "!");
     print!("AAAA");
     print!("BBBB");
-    println!("THe number is {} and answer is {}", 42, 1.0/3.0);
+    println!("The number is {} and answer is {}", 42, 1.0/3.0);
 
     loop {}
 }
