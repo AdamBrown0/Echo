@@ -1,3 +1,4 @@
+#![feature(abi_x86_interrupt)]
 #![no_std]
 #![no_main]
 
@@ -8,9 +9,11 @@ use core::panic::PanicInfo;
 #[no_mangle]
 pub extern "C" fn _start() -> !{
     println!("Hello World{}", "!");
-    print!("AAAA");
-    print!("BBBB");
-    println!("The number is {} and answer is {}", 42, 1.0/3.0);
+
+    echo::init();
+    x86_64::instructions::interrupts::int3();
+
+    println!("It didn't crash!");
 
     loop {}
 }
