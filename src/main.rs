@@ -10,12 +10,12 @@ use core::panic::PanicInfo;
 
 #[no_mangle]
 pub extern "C" fn _start() -> !{
+    echo::init();
+
     println!("Hello World{}", "!");
     print!("AAAA");
     print!("BBBB");
     println!("The number is {} and answer is {}", 42, 1.0/3.0);
-
-    echo::init();
 
     fn stack_overflow() {
         stack_overflow();
