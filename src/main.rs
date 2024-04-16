@@ -18,7 +18,12 @@ pub extern "C" fn _start() -> !{
     // #[cfg(test)]
     // test_main();
 
-    loop {}
+    loop {
+        for _ in 0..10000 {};
+
+        use echo::print;
+        print!("-");
+    }
 }
 
 #[cfg(not(test))]
