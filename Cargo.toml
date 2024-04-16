@@ -7,7 +7,9 @@ repository = "https://www.github.com/AdamBrown0/Echo.git"
 license = "GPL-3"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[test]]
+name = "should_panic"
+harness = false
 
 [dependencies]
 bootloader = "0.9.28"
@@ -16,7 +18,15 @@ spin = "0.9.8"
 pic8259 = "0.10.1"
 pc-keyboard = "0.5.0"
 x86_64 = "0.15.1"
+uart_16550 = "0.3.0"
 
 [dependencies.lazy_static]
 version = "1.4.0"
 features = ["spin_no_std"]
+
+[package.metadata.bootimage]
+test-args = [
+    "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "stdio",
+    "-display", "none"
+]
+test-success-exit-code = 33         # (0x10 << 1) | 1

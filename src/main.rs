@@ -1,24 +1,35 @@
-#![feature(abi_x86_interrupt)]
 #![no_std]
 #![no_main]
+#![feature(custom_test_frameworks)]
+#![test_runner(echo::test_runner)]
+#![reexport_test_harness_main = "test_main"]
 
-mod vga;
-
+use echo::print;
+use echo::println;
 use core::panic::PanicInfo;
 
 #[no_mangle]
 pub extern "C" fn _start() -> !{
     println!("Hello World{}", "!");
+    print!("AAAA");
+    print!("BBBB");
+    println!("The number is {} and answer is {}", 42, 1.0/3.0);
 
-    echo::init();
-    x86_64::instructions::interrupts::int3();
-
-    println!("It didn't crash!");
+    #[cfg(test)]
+    test_main();
 
     loop {}
 }
 
+#[cfg(not(test))]
 #[panic_handler]
-fn panic(_info: &PanicInfo) -> !{
+fn panic(info: &PanicInfo) -> !{
+    println!("{}", info);
     loop {}
+}
+
+#[cfg(test)]
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    echo::test_panic_handler(info);
 }
