@@ -1,43 +1,20 @@
-#![no_std]
-#![no_main]
-#![feature(custom_test_frameworks)]
-#![test_runner(echo::test_runner)]
-#![reexport_test_harness_main = "test_main"]
 
-use echo::print;
-use echo::println;
-use core::panic::PanicInfo;
+fn main() {
+    let uefi_path = env!("UEFI_PATH");
+    let bios_path = env!("BIOS_PATH");
 
-#[no_mangle]
-pub extern "C" fn _start() -> !{
-    println!("Hello World{}", "!");
-    print!("AAAA");
-    print!("BBBB");
-    println!("The number is {} and answer is {}", 42, 1.0/3.0);
+    let uefi = true;
 
-    echo::init();
-
-    fn stack_overflow() {
-        stack_overflow();
+    let mut cmd = std::process::Command::new("qemu-system-x86_64");
+    if uefi {
+        cmd.arg("-bios").arg(ovmf_prebuilt::ovmf_pure_efi());
+        cmd.arg("-drive").arg(format!("format=raw,file={}", uefi_path));
+    } else {
+        cmd.arg("-drive").arg(format!("format=raw,file={}", bios_path));
     }
 
-    // stack_overflow();
+    cmd.arg("-serial").arg("stdio");
 
-    #[cfg(test)]
-    test_main();
-
-    loop {}
-}
-
-#[cfg(not(test))]
-#[panic_handler]
-fn panic(info: &PanicInfo) -> !{
-    println!("{}", info);
-    loop {}
-}
-
-#[cfg(test)]
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    echo::test_panic_handler(info);
+    let mut child = cmd.spawn().unwrap();
+    child.wait().unwrap();
 }

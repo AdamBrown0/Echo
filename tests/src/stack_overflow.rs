@@ -3,9 +3,10 @@
 #![no_main]
 
 use core::panic::PanicInfo;
+use bootloader_api::{BootInfo, entry_point};
 use lazy_static::lazy_static;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
-use echo::{exit_qemu, QemuExitCode, serial_println, serial_print};
+use kernel::{exit_qemu, QemuExitCode, serial_println, serial_print};
 
 lazy_static! {
     static ref TEST_IDT: InterruptDescriptorTable = {
@@ -13,18 +14,18 @@ lazy_static! {
         unsafe {
             idt.double_fault
                 .set_handler_fn(test_double_fault_handler)
-                .set_stack_index(echo::gdt::DOUBLE_FAULT_IST_INDEX);
+                .set_stack_index(kernel::gdt::DOUBLE_FAULT_IST_INDEX);
         }
 
         idt
     };
 }
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+entry_point!(kernel_main);
+fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     serial_print!("stack_overflow::stack_overflow...\t");
 
-    echo::gdt::init();
+    kernel::gdt::init();
     init_test_idt();
 
     stack_overflow();
@@ -53,5 +54,5 @@ fn stack_overflow() {
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    echo::test_panic_handler(info)
+    kernel::test_panic_handler(info)
 }

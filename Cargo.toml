@@ -7,30 +7,26 @@ repository = "https://www.github.com/AdamBrown0/Echo.git"
 license = "GPL-3"
 edition = "2021"
 
-[[test]]
-name = "should_panic"
-harness = false
+#[profile.dev]
+#panic = "abort"
+#
+#[profile.release]
+#panic = "abort"
 
-[[test]]
-name = "stack_overflow"
-harness = false
+[build-dependencies]
+bootloader = { git = "https://github.com/rust-osdev/bootloader" }
+bootloader-boot-config = { git = "https://github.com/rust-osdev/bootloader" }
+kernel = { path = "kernel", artifact = "bin", target = "x86_64-unknown-none" }
 
 [dependencies]
-bootloader = "0.9.28"
-volatile = "0.2.6"
-spin = "0.9.8"
-pic8259 = "0.10.1"
-pc-keyboard = "0.5.0"
-x86_64 = "0.14.2"
-uart_16550 = "0.3.0"
+ovmf-prebuilt = "0.1.0-alpha.1"
 
-[dependencies.lazy_static]
-version = "1.4.0"
-features = ["spin_no_std"]
+#[package.metadata.bootimage]
+#test-args = [
+#    "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "stdio",
+#    "-display", "none"
+#]
+#test-success-exit-code = 33         # (0x10 << 1) | 1
 
-[package.metadata.bootimage]
-test-args = [
-    "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "stdio",
-    "-display", "none"
-]
-test-success-exit-code = 33         # (0x10 << 1) | 1
+[workspace]
+members = ["kernel", "tests"]
