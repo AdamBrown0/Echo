@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE instance-profile
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
+
+<instance-profile id="echo"
+                 name="Echo"
+                 start-page="Echo.md">
+
+    <toc-element topic="Echo.md"/>
+    <toc-element topic="Kernel.md">
+        <toc-element topic="Bare-Bones.md"/>
+        <toc-element topic="Interrupts.md"/>
+    </toc-element>
+    <toc-element topic="Common-Definitions.md"/>
+</instance-profile>
