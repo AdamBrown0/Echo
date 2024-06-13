@@ -13,14 +13,14 @@ fn main() {
     boot_config.log_level = bootloader_boot_config::LevelFilter::Error;
 
     // create an UEFI disk image (optional)
-    let uefi_path = out_dir.join("asensio_kernel-x86_64-uefi.img");
+    let uefi_path = out_dir.join("echo_kernel-x86_64-uefi.img");
     bootloader::UefiBoot::new(&kernel)
         .set_boot_config(&boot_config)
         .create_disk_image(&uefi_path)
         .unwrap();
 
     // create a BIOS disk image
-    let bios_path = out_dir.join("asensio_kernel-x86_64-bios.img");
+    let bios_path = out_dir.join("echo_kernel-x86_64-bios.img");
     bootloader::BiosBoot::new(&kernel)
         .set_boot_config(&boot_config)
         .create_disk_image(&bios_path)
