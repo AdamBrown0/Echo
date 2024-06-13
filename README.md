@@ -8,19 +8,11 @@ You can build the project by running:
 ```
 cargo build
 ```
-To create a bootable disk image from the compiled kernel, you need to install the [`bootimage`] tool:
 
-[`bootimage`]: https://github.com/rust-osdev/bootimage
+This also creates a bootable image for both BIOS and UEFI located at
 ```
-cargo install bootimage
+target/debug/build/echo-XXXXXXXXXXXXXXXX/out/
 ```
-
-After installing, you can create the bootable disk image by running:
-```
-cargo bootimage
-```
-
-This creates a bootable disk image in the `target/x86_64-echo/debug` directory.
 
 ## Running
 You can run the disk image in [QEMU] through:
@@ -30,7 +22,7 @@ You can run the disk image in [QEMU] through:
 cargo run
 ```
 
-[QEMU] and the [`bootimage`] tool need to be installed for this.
+[QEMU] needs to be installed for this.
 You can also write the image to a USB stick for booting it on a real machine. On Linux, the command for this is:
 ```
 dd if=target/x86_64-echo/debug/bootimage-echo.bin of=/dev/sdX && sync
