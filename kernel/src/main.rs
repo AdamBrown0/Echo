@@ -6,7 +6,7 @@
 
 
 use core::fmt::Write;
-use kernel::{serial_println, framebuffer_println, framebuffer_print};
+use kernel::{serial_println, framebuffer_print};
 use core::panic::PanicInfo;
 use bootloader_api::{BootInfo, entry_point};
 use kernel::framebuffer::FrameBufferWriter;
@@ -25,10 +25,14 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     let framebuffer_info = framebuffer.info().clone();
     let framebuffer_buffer = framebuffer.buffer_mut();
 
-    let mut writer = FrameBufferWriter::new(framebuffer_buffer, framebuffer_info);
+    let mut writer = FrameBufferWriter::new(framebuffer_buffer, framebuffer_info, [255, 0, 255]);
     writer.write_str("Hello World!\n").expect("TODO: panic message");
-    let _ = writer.write_str("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
+    writer.set_color([0, 255, 0]);
+    let _ = writer.write_str("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n");
+    writer.set_color([0, 0, 255]);
+    writer.write_str("This text is red :)").expect("TODO: panic message");
 
+    framebuffer_print!("Test");
     // #[cfg(test)]
     // test_main();
 

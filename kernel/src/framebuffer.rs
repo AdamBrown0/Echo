@@ -5,21 +5,18 @@ use noto_sans_mono_bitmap::{
     get_raster, get_raster_width, FontWeight, RasterHeight, RasterizedChar,
 };
 use spin::Mutex;
-use crate::serial_println;
 
 pub static FRAMEBUFFERWRITER: Mutex<Option<FrameBufferWriter>> = Mutex::new(None);
 
 pub fn init(framebuffer: &'static mut FrameBuffer) {
-    serial_println!("Before info");
     let info = framebuffer.info().clone();
-    serial_println!("Before buffer");
     let buffer = framebuffer.buffer_mut();
-    serial_println!("After both");
     let mut writer = FrameBufferWriter {
         framebuffer: buffer,
         info,
         x_pos: 0,
         y_pos: 0,
+        color: [255, 255, 255],
     };
     writer.clear();
 
@@ -72,16 +69,18 @@ pub struct FrameBufferWriter {
     info: FrameBufferInfo,
     x_pos: usize,
     y_pos: usize,
+    color: [u8; 3],
 }
 
 impl FrameBufferWriter {
     /// Creates a new logger that uses the given framebuffer.
-    pub fn new(framebuffer: &'static mut [u8], info: FrameBufferInfo) -> Self {
+    pub fn new(framebuffer: &'static mut [u8], info: FrameBufferInfo, color: [u8; 3]) -> Self {
         let mut logger = Self {
             framebuffer,
             info,
             x_pos: 0,
             y_pos: 0,
+            color,
         };
         logger.clear();
         logger
@@ -100,6 +99,11 @@ impl FrameBufferWriter {
         self.x_pos = BORDER_PADDING;
         self.y_pos = BORDER_PADDING;
         self.framebuffer.fill(0);
+    }
+
+    /// Set the color of the framebuffer.
+    pub fn set_color(&mut self, color: [u8; 3]) {
+        self.color = color;
     }
 
     fn width(&self) -> usize {
@@ -143,10 +147,12 @@ impl FrameBufferWriter {
 
     fn write_pixel(&mut self, x: usize, y: usize, intensity: u8) {
         let pixel_offset = y * self.info.stride + x;
+        let normalised_intensity = intensity as f32 / 255.0;
+        let normalised_color: [u8; 3] = [(self.color[0] as f32 * normalised_intensity) as u8, (self.color[1] as f32 * normalised_intensity) as u8, (self.color[2] as f32 * normalised_intensity) as u8];
         let color = match self.info.pixel_format {
-            PixelFormat::Rgb => [intensity, intensity, intensity / 2, 0],
-            PixelFormat::Bgr => [intensity / 2, intensity, intensity, 0],
-            PixelFormat::U8 => [if intensity > 200 { 0xf } else { 0 }, 0, 0, 0],
+            PixelFormat::Rgb => [normalised_color[0], normalised_color[1], normalised_color[2], 0],
+            PixelFormat::Bgr => [normalised_color[2], normalised_color[1], normalised_color[0], 0],
+            PixelFormat::U8 => [if normalised_color.iter().sum::<u8>() / 3 > 200 { 0xf } else { 0 }, 0, 0, 0],
             other => {
                 // set a supported (but invalid) pixel format before panicking to avoid a double
                 // panic; it might not be readable though
